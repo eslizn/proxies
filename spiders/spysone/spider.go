@@ -4,23 +4,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/dop251/goja"
+	"github.com/eslizn/proxies"
 	"html"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"time"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/dop251/goja"
-	"github.com/eslizn/proxies"
 )
 
 type Option struct {
 	UserAgent   string
 	ContentType string
-	Timeout     time.Duration
 	Type        string
 	Country     string
 	ChanSize    int
@@ -56,7 +53,7 @@ func (s *Spider) request(ctx context.Context) (io.ReadCloser, error) {
 	}
 	request.Header.Set("User-Agent", s.UserAgent)
 	request.Header.Set("Content-Type", s.ContentType)
-	client := &http.Client{Timeout: s.Timeout}
+	client := &http.Client{}
 	if len(os.Getenv("HTTP_PROXY")) > 0 {
 		client.Transport = &http.Transport{Proxy: func(r *http.Request) (*url.URL, error) {
 			return url.Parse(os.Getenv("HTTP_PROXY"))
@@ -118,9 +115,6 @@ func New(opt *Option) *Spider {
 	}
 	if len(opt.ContentType) < 1 {
 		opt.ContentType = "text/html; charset=utf-8"
-	}
-	if opt.Timeout == 0 {
-		opt.Timeout = time.Second * 3
 	}
 	if opt.ChanSize == 0 {
 		opt.ChanSize = 32
