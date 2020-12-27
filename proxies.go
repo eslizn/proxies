@@ -2,6 +2,7 @@ package proxies
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 	"net/url"
 	"sync"
@@ -29,6 +30,7 @@ func GetWithContext(ctx context.Context) (*http.Transport, error) {
 				Proxy: func(*http.Request) (*url.URL, error) {
 					return url.Parse(val)
 				},
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
 			cache.Store(val, trans)
 		}

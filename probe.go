@@ -3,6 +3,7 @@ package proxies
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"errors"
 	"net/http"
 	"net/url"
@@ -32,6 +33,7 @@ func Available(ctx context.Context, addr string) error {
 		Proxy: func(*http.Request) (*url.URL, error) {
 			return url.Parse(addr)
 		},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}}
 	rsp, err := client.Do(req)
 	if err != nil {
